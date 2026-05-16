@@ -94,29 +94,55 @@ export default function Home() {
     }
   }, [activeTab, selectedCatBreed]);
 
+  const dogRanks = useMemo(() => {
+    const sorted = [...dogBreeds].sort((a, b) => {
+      const detailsA = getBreedDetails(a, false);
+      const detailsB = getBreedDetails(b, false);
+      return detailsA.rawPopularity - detailsB.rawPopularity;
+    });
+    const map: Record<string, number> = {};
+    sorted.forEach((breed, idx) => {
+      map[breed] = idx + 1;
+    });
+    return map;
+  }, [dogBreeds]);
+
+  const catRanks = useMemo(() => {
+    const sorted = [...catBreeds].sort((a, b) => {
+      const detailsA = getBreedDetails(a.id, true, a.origin);
+      const detailsB = getBreedDetails(b.id, true, b.origin);
+      return detailsA.rawPopularity - detailsB.rawPopularity;
+    });
+    const map: Record<string, number> = {};
+    sorted.forEach((cat, idx) => {
+      map[cat.id] = idx + 1;
+    });
+    return map;
+  }, [catBreeds]);
+
   const sortedDogBreeds = useMemo(() => {
     return [...dogBreeds].sort((a, b) => {
       if (sortBy === 'name') return a.localeCompare(b);
+      if (sortBy === 'popularity') return dogRanks[a] - dogRanks[b];
       const detailsA = getBreedDetails(a, false);
       const detailsB = getBreedDetails(b, false);
-      if (sortBy === 'popularity') return detailsA.rawPopularity - detailsB.rawPopularity;
       if (sortBy === 'price') return detailsA.rawMinPrice - detailsB.rawMinPrice;
       if (sortBy === 'origin') return detailsA.origin.localeCompare(detailsB.origin);
       return 0;
     });
-  }, [dogBreeds, sortBy]);
+  }, [dogBreeds, sortBy, dogRanks]);
 
   const sortedCatBreeds = useMemo(() => {
     return [...catBreeds].sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'popularity') return catRanks[a.id] - catRanks[b.id];
       const detailsA = getBreedDetails(a.id, true, a.origin);
       const detailsB = getBreedDetails(b.id, true, b.origin);
-      if (sortBy === 'popularity') return detailsA.rawPopularity - detailsB.rawPopularity;
       if (sortBy === 'price') return detailsA.rawMinPrice - detailsB.rawMinPrice;
       if (sortBy === 'origin') return detailsA.origin.localeCompare(detailsB.origin);
       return 0;
     });
-  }, [catBreeds, sortBy]);
+  }, [catBreeds, sortBy, catRanks]);
 
   useEffect(() => {
     if (sortedDogBreeds.length > 0) {
@@ -189,7 +215,7 @@ export default function Home() {
                 const displayName = breed.charAt(0).toUpperCase() + breed.slice(1);
                 return (
                   <option key={breed} value={breed}>
-                    {displayName}{translation ? ` (${translation})` : ''}
+                    #{dogRanks[breed]} {displayName}{translation ? ` (${translation})` : ''}
                   </option>
                 );
               })}
@@ -204,7 +230,7 @@ export default function Home() {
                 const translation = getCatBreedTranslation(breed.name);
                 return (
                   <option key={breed.id} value={breed.id}>
-                    {breed.name}{translation ? ` (${translation})` : ''}
+                    #{catRanks[breed.id]} {breed.name}{translation ? ` (${translation})` : ''}
                   </option>
                 );
               })}
@@ -224,7 +250,7 @@ export default function Home() {
 
         {activeCatInfo && catDetails && (
           <div className="info-card">
-            <h3>About the {activeCatInfo.name}</h3>
+            <h3>#{catRanks[activeCatInfo.id]} {activeCatInfo.name}</h3>
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {catDetails.origin}</span>
               <span><strong>Price Range:</strong> {catDetails.priceRange}</span>
@@ -241,7 +267,7 @@ export default function Home() {
 
         {activeTab === 'dogs' && selectedDogBreed && dogDetails && (
           <div className="info-card">
-            <h3>About the {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
+            <h3>#{dogRanks[selectedDogBreed]} {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {dogDetails.origin}</span>
               <span><strong>Price Range:</strong> {dogDetails.priceRange}</span>
