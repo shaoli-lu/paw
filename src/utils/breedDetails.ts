@@ -4,21 +4,21 @@ const origins = [
 ];
 
 const dogSpecificOrigins: Record<string, string> = {
-  "samoyed": "Siberia / Russia",
+  "samoyed": "Siberia, Russia",
   "shiba": "Japan",
   "akita": "Japan",
   "husky": "Siberia",
   "malamute": "Alaska, USA",
   "retriever": "Scotland",
   "labrador": "Newfoundland, Canada",
-  "bulldog": "United Kingdom",
-  "poodle": "Germany / France",
+  "bulldog": "England / France",
+  "poodle": "Germany",
   "germanshepherd": "Germany",
   "chihuahua": "Mexico",
   "pug": "China",
   "dalmatian": "Croatia",
   "corgi": "Wales, UK",
-  "beagle": "United Kingdom",
+  "beagle": "England, UK",
   "rottweiler": "Germany",
   "dachshund": "Germany",
   "boxer": "Germany",
@@ -26,19 +26,23 @@ const dogSpecificOrigins: Record<string, string> = {
   "chow": "China",
   "pekinese": "China",
   "pomeranian": "Germany / Poland",
-  "mastiff": "United Kingdom",
+  "mastiff": "England, UK",
   "greatdane": "Germany",
-  "collie": "United Kingdom"
+  "collie": "Scotland, UK",
+  "pointer": "Germany / England",
+  "vizsla": "Hungary",
+  "schipperke": "Belgium",
+  "terrier": "United Kingdom",
+  "spaniel": "Spain / UK"
 };
 
 const akcDogData: Record<string, { rank: number; price: string; rawPrice: number }> = {
-  "frenchbulldog": { rank: 1, price: "$1,500 - $3,500", rawPrice: 1500 },
+  "bulldog": { rank: 1, price: "$1,500 - $3,500", rawPrice: 1500 }, // Using French Bulldog (AKC #1) for bulldog group
   "labrador": { rank: 2, price: "$800 - $1,500", rawPrice: 800 },
-  "golden": { rank: 3, price: "$1,000 - $2,500", rawPrice: 1000 },
+  "retriever": { rank: 3, price: "$1,000 - $2,500", rawPrice: 1000 }, // Golden Retriever
   "germanshepherd": { rank: 4, price: "$1,000 - $2,000", rawPrice: 1000 },
   "poodle": { rank: 5, price: "$1,000 - $2,500", rawPrice: 1000 },
   "dachshund": { rank: 6, price: "$500 - $1,500", rawPrice: 500 },
-  "bulldog": { rank: 7, price: "$1,500 - $4,000", rawPrice: 1500 },
   "beagle": { rank: 8, price: "$500 - $1,200", rawPrice: 500 },
   "rottweiler": { rank: 9, price: "$1,000 - $2,500", rawPrice: 1000 },
   "pointer": { rank: 10, price: "$800 - $1,500", rawPrice: 800 },

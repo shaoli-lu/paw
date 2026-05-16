@@ -5,7 +5,7 @@ interface CacheEntry {
 
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-const CACHE_VERSION = 'v1.2'; // Updated for AKC/CFA 2023 data
+const CACHE_VERSION = 'v1.3'; // Updated for verified dog origins
 
 export const fetchWithCache = async (url: string) => {
   const cacheKey = `${CACHE_VERSION}_${url}`;
