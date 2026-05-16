@@ -86,7 +86,6 @@ export default function Home() {
       
       <header className="app-header">
         <h1 className="app-title">Pawfect</h1>
-        <p className="app-subtitle">The ultimate educational gallery for pet lovers</p>
       </header>
 
       <div className="main-container">
@@ -133,6 +132,16 @@ export default function Home() {
           )}
         </div>
 
+        <div className="slideshow-wrapper">
+          {loading ? (
+            <div className="loading-spinner">
+              Fetching pawfect pictures...
+            </div>
+          ) : (
+             <Slideshow images={images} />
+          )}
+        </div>
+
         {activeCatInfo && (
           <div className="info-card">
             <h3>About the {activeCatInfo.name}</h3>
@@ -148,7 +157,7 @@ export default function Home() {
         {activeTab === 'dogs' && selectedDogBreed && (
           <div className="info-card">
             <h3>About the {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
-            <p>The {selectedDogBreed} is a wonderful and beautiful dog breed. Known for their unique characteristics and loyal companionship, they make great additions to many families. Explore the gallery below to see just how stunning they are!</p>
+            <p>The {selectedDogBreed} is a wonderful and beautiful dog breed. Known for their unique characteristics and loyal companionship, they make great additions to many families. Explore the gallery above to see just how stunning they are!</p>
             <div className="tags">
               <span className="tag">Loyal Companion</span>
               <span className="tag">Playful</span>
@@ -156,16 +165,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
-        <div className="slideshow-wrapper">
-          {loading ? (
-            <div className="loading-spinner">
-              Fetching pawfect pictures...
-            </div>
-          ) : (
-             <Slideshow images={images} />
-          )}
-        </div>
       </div>
     </main>
   );

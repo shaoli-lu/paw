@@ -299,7 +299,7 @@ body {
 /* Help Modal */
 .help-button {
   position: fixed;
-  bottom: 2rem;
+  top: 2rem;
   right: 2rem;
   width: 60px;
   height: 60px;
