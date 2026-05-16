@@ -254,7 +254,7 @@ export default function Home() {
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {catDetails.origin}</span>
               <span><strong>Price Range:</strong> {catDetails.priceRange}</span>
-              <span><strong>Popularity:</strong> {catDetails.popularity}</span>
+              <span><strong>Popularity:</strong> #{catRanks[activeCatInfo.id]} Most Popular</span>
             </div>
             <p>{activeCatInfo.description}</p>
             <div className="tags">
@@ -271,7 +271,7 @@ export default function Home() {
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {dogDetails.origin}</span>
               <span><strong>Price Range:</strong> {dogDetails.priceRange}</span>
-              <span><strong>Popularity:</strong> {dogDetails.popularity}</span>
+              <span><strong>Popularity:</strong> #{dogRanks[selectedDogBreed]} Most Popular</span>
             </div>
             <p>The {selectedDogBreed} is a wonderful and beautiful dog breed. Known for their unique characteristics and loyal companionship, they make great additions to many families. Explore the gallery above to see just how stunning they are!</p>
             <div className="tags">

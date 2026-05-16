@@ -5,10 +5,13 @@ interface CacheEntry {
 
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
+const CACHE_VERSION = 'v1.1'; // Update this to bust cache
+
 export const fetchWithCache = async (url: string) => {
+  const cacheKey = `${CACHE_VERSION}_${url}`;
   // Check if we have a valid cached response
   try {
-    const cachedItem = localStorage.getItem(url);
+    const cachedItem = localStorage.getItem(cacheKey);
     if (cachedItem) {
       const entry: CacheEntry = JSON.parse(cachedItem);
       if (Date.now() - entry.timestamp < CACHE_EXPIRY_MS) {
@@ -29,7 +32,7 @@ export const fetchWithCache = async (url: string) => {
     
     // Save to cache
     try {
-      localStorage.setItem(url, JSON.stringify({
+      localStorage.setItem(cacheKey, JSON.stringify({
         timestamp: Date.now(),
         data
       }));
@@ -41,7 +44,7 @@ export const fetchWithCache = async (url: string) => {
   } catch (error) {
     // If the fetch fails, try to return stale cache as a fallback for resilience
     try {
-      const cachedItem = localStorage.getItem(url);
+      const cachedItem = localStorage.getItem(cacheKey);
       if (cachedItem) {
         console.log('Serving stale cache due to network failure');
         const entry: CacheEntry = JSON.parse(cachedItem);
