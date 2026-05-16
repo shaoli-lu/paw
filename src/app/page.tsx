@@ -6,6 +6,9 @@ import HelpModal from '@/components/HelpModal';
 import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTranslations';
 import { getBreedDetails } from '@/utils/breedDetails';
 import { fetchWithCache } from '@/utils/apiCache';
+import dogDescriptionsData from '@/utils/dogDescriptions.json';
+
+const dogDescriptions: Record<string, string> = dogDescriptionsData;
 
 type CatBreed = {
   id: string;
@@ -286,7 +289,7 @@ export default function Home() {
               <span><strong>Price Range:</strong> {dogDetails.priceRange}</span>
               <span><strong>Popularity:</strong> #{dogRanks[selectedDogBreed]} Most Popular</span>
             </div>
-            <p>The {selectedDogBreed} is a wonderful and beautiful dog breed. Known for their unique characteristics and loyal companionship, they make great additions to many families. Explore the gallery above to see just how stunning they are!</p>
+            <p>{dogDescriptions[selectedDogBreed] || dogDescriptions["default"]}</p>
             <div className="tags">
               <span className="tag">Loyal Companion</span>
               <span className="tag">Playful</span>
