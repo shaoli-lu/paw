@@ -100,13 +100,13 @@ export default function Home() {
             className={`tab-button ${activeTab === 'dogs' ? 'active' : ''}`}
             onClick={() => setActiveTab('dogs')}
           >
-            🐶 Dogs (狗)
+            Dogs (狗)
           </button>
           <button
             className={`tab-button ${activeTab === 'cats' ? 'active' : ''}`}
             onClick={() => setActiveTab('cats')}
           >
-            🐱 Cats (猫)
+            Cats (猫)
           </button>
         </div>
 
