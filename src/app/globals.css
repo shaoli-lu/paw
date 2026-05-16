@@ -56,6 +56,37 @@ body {
   font-weight: 300;
 }
 
+.golden-text {
+  -webkit-text-fill-color: #ffd700;
+  color: #ffd700;
+}
+
+.letters-with-paws {
+  position: relative;
+  display: inline;
+}
+
+.paw-prints {
+  position: absolute;
+  top: 10px;
+  left: 42%;
+  transform: translateX(-50%);
+  font-size: 0.25em;
+  -webkit-text-fill-color: initial;
+  color: initial;
+  animation: wave 12s infinite ease-in-out;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+  pointer-events: none;
+  display: flex;
+  gap: 0.2em;
+}
+
+@keyframes wave {
+  0%, 100% { transform: translateX(-54%) rotate(-3deg); }
+  50% { transform: translateX(-46%) rotate(3deg); }
+}
+
 /* Main Container */
 .main-container {
   flex: 1;

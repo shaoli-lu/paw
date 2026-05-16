@@ -86,7 +86,12 @@ export default function Home() {
       <HelpModal />
 
       <header className="app-header">
-        <h1 className="app-title">Pawfect</h1>
+        <h1 className="app-title">
+          <span className="golden-text">P</span><span className="letters-with-paws golden-text">aw<span className="paw-prints">
+            <span>🐶</span>
+            <span>🐱</span>
+          </span></span>fect
+        </h1>
       </header>
 
       <div className="main-container">
