@@ -1,9 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function HelpModal() {
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   return (
     <>
@@ -12,7 +24,7 @@ export default function HelpModal() {
         onClick={() => setIsOpen(true)}
         aria-label="Help"
       >
-        ?
+        <span className="help-icon">?</span>
       </button>
 
       {isOpen && (
@@ -26,6 +38,7 @@ export default function HelpModal() {
               <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause using the play/pause button, or manually navigate with arrows.</li>
               <li><strong>Learn:</strong> Read the informational card below the dropdown to learn about the breed!</li>
             </ul>
+            <button className="got-it-button" onClick={() => setIsOpen(false)}>Got it!</button>
           </div>
         </div>
       )}
