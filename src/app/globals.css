@@ -141,10 +141,11 @@ body {
 .controls-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   gap: 1rem;
+  width: 100%;
 }
 
 .custom-select {
@@ -153,26 +154,61 @@ body {
   backdrop-filter: blur(12px);
   color: white;
   border: 1px solid rgba(255,255,255,0.1);
-  padding: 1.2rem 3.5rem 1.2rem 2rem;
-  font-size: 1.2rem;
+  padding: 1.1rem 3rem 1.1rem 1.5rem;
+  font-size: 1.1rem;
   font-weight: 500;
   border-radius: 50px;
   cursor: pointer;
-  width: 100%;
-  max-width: 450px;
   outline: none;
   transition: var(--transition);
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 1.5rem center;
-  background-size: 1.2em;
+  background-position: right 1.2rem center;
+  background-size: 1em;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.sort-select {
+  flex: 0 1 220px;
+  min-width: 180px;
+}
+
+.breed-select {
+  flex: 1 1 400px;
 }
 
 .custom-select:focus, .custom-select:hover {
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px var(--glow-color), 0 8px 32px rgba(0,0,0,0.4);
   transform: translateY(-2px);
+}
+
+.refresh-button {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.2rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.refresh-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--secondary-color);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+}
+
+.refresh-button:active {
+  transform: translateY(0) scale(0.95);
 }
 
 /* Info Card with Glassmorphism */
@@ -495,6 +531,16 @@ body {
   .custom-select {
     font-size: 1.1rem;
     padding: 1rem 3rem 1rem 1.5rem;
+  }
+  .controls-container {
+    flex-wrap: wrap;
+  }
+  .sort-select, .breed-select {
+    flex: 1 1 100%;
+  }
+  .refresh-button {
+    width: 100%;
+    justify-content: center;
   }
   .modal-content {
     padding: 1.5rem;

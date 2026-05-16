@@ -38,6 +38,7 @@ export default function HelpModal() {
               <li><strong>Rankings:</strong> Look for the #number prefix to see the popularity rank of each breed!</li>
               <li><strong>Bilingual Support:</strong> All breeds now include Chinese (中文) translations in the selection menu.</li>
               <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause, or manually navigate with arrows.</li>
+              <li><strong>Refresh Gallery:</strong> Use the 🔄 **Refresh** button to instantly fetch a new set of high-quality random images for the current breed.</li>
               <li><strong>Learn:</strong> Read the informational card below to learn about origin, price range, and personality!</li>
               <li><strong>How it Works:</strong> Popularity ranks and price estimates are based on 2023 AKC (Dog) and CFA (Cat) registration data. Dog breed origins for popular breeds are verified against historical records. For other breeds, values are estimated deterministically.</li>
             </ul>

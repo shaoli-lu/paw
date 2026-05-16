@@ -30,6 +30,7 @@ export default function Home() {
 
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     // Fetch initial breeds
@@ -63,7 +64,9 @@ export default function Home() {
   useEffect(() => {
     if (activeTab === 'dogs' && selectedDogBreed) {
       setLoading(true);
-      fetchWithCache(`https://dog.ceo/api/breed/${selectedDogBreed}/images/random/10`)
+      // Use a version param to allow refreshing/bypassing cache if needed
+      const url = `https://dog.ceo/api/breed/${selectedDogBreed}/images/random/10${refreshKey > 0 ? `?r=${refreshKey}` : ''}`;
+      fetchWithCache(url)
         .then(data => {
           if (data && data.message) {
             setImages(data.message);
@@ -75,12 +78,14 @@ export default function Home() {
           setLoading(false);
         });
     }
-  }, [activeTab, selectedDogBreed]);
+  }, [activeTab, selectedDogBreed, refreshKey]);
 
   useEffect(() => {
     if (activeTab === 'cats' && selectedCatBreed) {
       setLoading(true);
-      fetchWithCache(`https://api.thecatapi.com/v1/images/search?breed_ids=${selectedCatBreed}&limit=10`)
+      // Refined Cat API call for better quality/relevance
+      const url = `https://api.thecatapi.com/v1/images/search?breed_ids=${selectedCatBreed}&limit=10&order=DESC&size=med&mime_types=jpg,png${refreshKey > 0 ? `&r=${refreshKey}` : ''}`;
+      fetchWithCache(url)
         .then(data => {
           if (data && Array.isArray(data)) {
             setImages(data.map((img: any) => img.url));
@@ -92,7 +97,7 @@ export default function Home() {
           setLoading(false);
         });
     }
-  }, [activeTab, selectedCatBreed]);
+  }, [activeTab, selectedCatBreed, refreshKey]);
 
   const dogRanks = useMemo(() => {
     const sorted = [...dogBreeds].sort((a, b) => {
@@ -236,6 +241,14 @@ export default function Home() {
               })}
             </select>
           )}
+
+          <button 
+            className="refresh-button" 
+            onClick={() => setRefreshKey(prev => prev + 1)}
+            title="Fetch new random images"
+          >
+            🔄 Refresh
+          </button>
         </div>
 
         <div className="slideshow-wrapper">
