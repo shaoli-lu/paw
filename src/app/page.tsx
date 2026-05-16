@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Slideshow from '@/components/Slideshow';
 import HelpModal from '@/components/HelpModal';
+import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTranslations';
 
 type CatBreed = {
   id: string;
@@ -13,14 +14,14 @@ type CatBreed = {
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'dogs' | 'cats'>('dogs');
-  
+
   // Data States
   const [dogBreeds, setDogBreeds] = useState<string[]>([]);
   const [catBreeds, setCatBreeds] = useState<CatBreed[]>([]);
-  
+
   const [selectedDogBreed, setSelectedDogBreed] = useState<string>('');
   const [selectedCatBreed, setSelectedCatBreed] = useState<string>('');
-  
+
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,58 +77,65 @@ export default function Home() {
     }
   }, [activeTab, selectedCatBreed]);
 
-  const activeCatInfo = activeTab === 'cats' 
-    ? catBreeds.find(c => c.id === selectedCatBreed) 
+  const activeCatInfo = activeTab === 'cats'
+    ? catBreeds.find(c => c.id === selectedCatBreed)
     : null;
 
   return (
     <main>
       <HelpModal />
-      
+
       <header className="app-header">
         <h1 className="app-title">Pawfect</h1>
       </header>
 
       <div className="main-container">
         <div className="tabs-container">
-          <button 
+          <button
             className={`tab-button ${activeTab === 'dogs' ? 'active' : ''}`}
             onClick={() => setActiveTab('dogs')}
           >
-            🐶 Dogs
+            🐶 Dogs (狗)
           </button>
-          <button 
+          <button
             className={`tab-button ${activeTab === 'cats' ? 'active' : ''}`}
             onClick={() => setActiveTab('cats')}
           >
-            🐱 Cats
+            🐱 Cats (猫)
           </button>
         </div>
 
         <div className="controls-container">
           {activeTab === 'dogs' ? (
-            <select 
-              className="custom-select" 
+            <select
+              className="custom-select"
               value={selectedDogBreed}
               onChange={(e) => setSelectedDogBreed(e.target.value)}
             >
-              {dogBreeds.map(breed => (
-                <option key={breed} value={breed}>
-                  {breed.charAt(0).toUpperCase() + breed.slice(1)}
-                </option>
-              ))}
+              {dogBreeds.map(breed => {
+                const translation = getDogBreedTranslation(breed);
+                const displayName = breed.charAt(0).toUpperCase() + breed.slice(1);
+                return (
+                  <option key={breed} value={breed}>
+                    {displayName}{translation ? ` (${translation})` : ''}
+                  </option>
+                );
+              })}
             </select>
           ) : (
-            <select 
-              className="custom-select" 
+            <select
+              className="custom-select"
               value={selectedCatBreed}
               onChange={(e) => setSelectedCatBreed(e.target.value)}
             >
-              {catBreeds.map(breed => (
-                <option key={breed.id} value={breed.id}>
-                  {breed.name}
-                </option>
-              ))}
+              {catBreeds.map(breed => {
+                const translation = getCatBreedTranslation(breed.name);
+                return (
+                  <option key={breed.id} value={breed.id}>
+                    {breed.name}{translation ? ` (${translation})` : ''}
+                  </option>
+                );
+              })}
             </select>
           )}
         </div>
@@ -138,7 +146,7 @@ export default function Home() {
               Fetching pawfect pictures...
             </div>
           ) : (
-             <Slideshow images={images} />
+            <Slideshow images={images} />
           )}
         </div>
 
@@ -153,7 +161,7 @@ export default function Home() {
             </div>
           </div>
         )}
-        
+
         {activeTab === 'dogs' && selectedDogBreed && (
           <div className="info-card">
             <h3>About the {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
