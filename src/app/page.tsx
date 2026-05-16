@@ -5,6 +5,7 @@ import Slideshow from '@/components/Slideshow';
 import HelpModal from '@/components/HelpModal';
 import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTranslations';
 import { getBreedDetails } from '@/utils/breedDetails';
+import { fetchWithCache } from '@/utils/apiCache';
 
 type CatBreed = {
   id: string;
@@ -32,25 +33,29 @@ export default function Home() {
 
   useEffect(() => {
     // Fetch initial breeds
-    fetch('https://dog.ceo/api/breeds/list/all')
-      .then(res => res.json())
+    fetchWithCache('https://dog.ceo/api/breeds/list/all')
       .then(data => {
-        const breeds = Object.keys(data.message);
-        setDogBreeds(breeds);
-      });
+        if (data && data.message) {
+          const breeds = Object.keys(data.message);
+          setDogBreeds(breeds);
+        }
+      })
+      .catch(console.error);
 
-    fetch('https://api.thecatapi.com/v1/breeds')
-      .then(res => res.json())
+    fetchWithCache('https://api.thecatapi.com/v1/breeds')
       .then(data => {
-        const cats = data.map((cat: any) => ({
-          id: cat.id,
-          name: cat.name,
-          description: cat.description,
-          temperament: cat.temperament,
-          origin: cat.origin
-        }));
-        setCatBreeds(cats);
-      });
+        if (data && Array.isArray(data)) {
+          const cats = data.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name,
+            description: cat.description,
+            temperament: cat.temperament,
+            origin: cat.origin
+          }));
+          setCatBreeds(cats);
+        }
+      })
+      .catch(console.error);
   }, []);
 
 
@@ -58,10 +63,15 @@ export default function Home() {
   useEffect(() => {
     if (activeTab === 'dogs' && selectedDogBreed) {
       setLoading(true);
-      fetch(`https://dog.ceo/api/breed/${selectedDogBreed}/images/random/10`)
-        .then(res => res.json())
+      fetchWithCache(`https://dog.ceo/api/breed/${selectedDogBreed}/images/random/10`)
         .then(data => {
-          setImages(data.message);
+          if (data && data.message) {
+            setImages(data.message);
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
           setLoading(false);
         });
     }
@@ -70,10 +80,15 @@ export default function Home() {
   useEffect(() => {
     if (activeTab === 'cats' && selectedCatBreed) {
       setLoading(true);
-      fetch(`https://api.thecatapi.com/v1/images/search?breed_ids=${selectedCatBreed}&limit=10`)
-        .then(res => res.json())
+      fetchWithCache(`https://api.thecatapi.com/v1/images/search?breed_ids=${selectedCatBreed}&limit=10`)
         .then(data => {
-          setImages(data.map((img: any) => img.url));
+          if (data && Array.isArray(data)) {
+            setImages(data.map((img: any) => img.url));
+          }
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
           setLoading(false);
         });
     }
