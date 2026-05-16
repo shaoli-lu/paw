@@ -33,10 +33,12 @@ export default function HelpModal() {
             <button className="close-button" onClick={() => setIsOpen(false)}>×</button>
             <h2>How to Use Pawfect</h2>
             <ul className="help-list">
-              <li><strong>Switch Pets:</strong> Use the Tabs to switch between Dogs and Cats.</li>
-              <li><strong>Select a Breed:</strong> Use the dropdown menu to choose your favorite breed.</li>
-              <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause using the play/pause button, or manually navigate with arrows.</li>
-              <li><strong>Learn:</strong> Read the informational card below the dropdown to learn about the breed!</li>
+              <li><strong>Switch Pets:</strong> Use the tabs to toggle between Dogs (狗) and Cats (猫).</li>
+              <li><strong>Sort & Find:</strong> Use the sort dropdown to order breeds by popularity, price, name, or origin.</li>
+              <li><strong>Rankings:</strong> Look for the #number prefix to see the popularity rank of each breed!</li>
+              <li><strong>Bilingual Support:</strong> All breeds now include Chinese (中文) translations in the selection menu.</li>
+              <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause, or manually navigate with arrows.</li>
+              <li><strong>Learn:</strong> Read the informational card below to learn about origin, price range, and personality!</li>
             </ul>
             <button className="got-it-button" onClick={() => setIsOpen(false)}>Got it!</button>
           </div>
