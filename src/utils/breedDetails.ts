@@ -1,40 +1,6 @@
-const origins = [
-  "United Kingdom", "United States", "Germany", "France", "China", "Japan", "Russia", 
-  "Australia", "Canada", "Egypt", "Italy", "Spain", "Mexico", "Middle East", "Africa"
-];
+import dogOriginsData from './dogOrigins.json';
 
-const dogSpecificOrigins: Record<string, string> = {
-  "samoyed": "Siberia, Russia",
-  "shiba": "Japan",
-  "akita": "Japan",
-  "husky": "Siberia",
-  "malamute": "Alaska, USA",
-  "retriever": "Scotland",
-  "labrador": "Newfoundland, Canada",
-  "bulldog": "England / France",
-  "poodle": "Germany",
-  "germanshepherd": "Germany",
-  "chihuahua": "Mexico",
-  "pug": "China",
-  "dalmatian": "Croatia",
-  "corgi": "Wales, UK",
-  "beagle": "England, UK",
-  "rottweiler": "Germany",
-  "dachshund": "Germany",
-  "boxer": "Germany",
-  "doberman": "Germany",
-  "chow": "China",
-  "pekinese": "China",
-  "pomeranian": "Germany / Poland",
-  "mastiff": "England, UK",
-  "greatdane": "Germany",
-  "collie": "Scotland, UK",
-  "pointer": "Germany / England",
-  "vizsla": "Hungary",
-  "schipperke": "Belgium",
-  "terrier": "United Kingdom",
-  "spaniel": "Spain / UK"
-};
+const dogOrigins: Record<string, string> = dogOriginsData;
 
 const akcDogData: Record<string, { rank: number; price: string; rawPrice: number }> = {
   "bulldog": { rank: 1, price: "$1,500 - $3,500", rawPrice: 1500 }, // Using French Bulldog (AKC #1) for bulldog group
@@ -90,10 +56,8 @@ export const getBreedDetails = (breedId: string, isCat: boolean, actualOrigin?: 
   let origin = "Unknown";
   if (isCat && actualOrigin) {
     origin = actualOrigin;
-  } else if (!isCat && dogSpecificOrigins[lowerId]) {
-    origin = dogSpecificOrigins[lowerId];
-  } else {
-    origin = origins[hash % origins.length];
+  } else if (!isCat) {
+    origin = dogOrigins[lowerId] || dogOrigins["default"];
   }
   
   const dogData = !isCat ? akcDogData[lowerId] : null;

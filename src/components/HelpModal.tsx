@@ -40,7 +40,7 @@ export default function HelpModal() {
               <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause, or manually navigate with arrows.</li>
               <li><strong>Refresh Gallery:</strong> Use the 🔄 **Refresh** button to instantly fetch a new set of high-quality random images for the current breed.</li>
               <li><strong>Learn:</strong> Read the informational card below to learn about origin, price range, and personality!</li>
-              <li><strong>How it Works:</strong> Popularity ranks and price estimates are based on 2023 AKC (Dog) and CFA (Cat) registration data. Dog breed origins for popular breeds are verified against historical records. For other breeds, values are estimated deterministically.</li>
+              <li><strong>How it Works:</strong> Popularity ranks and price estimates are based on 2023 AKC/CFA registration data. Dog breed origins and histories are compiled into a comprehensive local JSON database to guarantee historical accuracy.</li>
             </ul>
             <button className="got-it-button" onClick={() => setIsOpen(false)}>Got it!</button>
           </div>
