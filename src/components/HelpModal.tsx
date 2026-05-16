@@ -39,6 +39,7 @@ export default function HelpModal() {
               <li><strong>Bilingual Support:</strong> All breeds now include Chinese (中文) translations in the selection menu.</li>
               <li><strong>Slideshow:</strong> Enjoy the beautiful photos. Hover over the image to pause/unpause, or manually navigate with arrows.</li>
               <li><strong>Learn:</strong> Read the informational card below to learn about origin, price range, and personality!</li>
+              <li><strong>How it Works:</strong> Popularity ranks and price estimates are based on 2023 AKC (Dog) and CFA (Cat) registration data. For breeds not in the top lists, values are estimated deterministically. Sorting by price uses the starting minimum price.</li>
             </ul>
             <button className="got-it-button" onClick={() => setIsOpen(false)}>Got it!</button>
           </div>
