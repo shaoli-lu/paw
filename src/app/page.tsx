@@ -1,19 +1,24 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Slideshow from '@/components/Slideshow';
 import HelpModal from '@/components/HelpModal';
 import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTranslations';
+import { getBreedDetails } from '@/utils/breedDetails';
 
 type CatBreed = {
   id: string;
   name: string;
   description: string;
   temperament: string;
+  origin: string;
 };
+
+type SortOption = 'name' | 'popularity' | 'price' | 'origin';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'dogs' | 'cats'>('dogs');
+  const [sortBy, setSortBy] = useState<SortOption>('popularity');
 
   // Data States
   const [dogBreeds, setDogBreeds] = useState<string[]>([]);
@@ -32,9 +37,6 @@ export default function Home() {
       .then(data => {
         const breeds = Object.keys(data.message);
         setDogBreeds(breeds);
-        if (breeds.length > 0) {
-          setSelectedDogBreed('samoyed');
-        }
       });
 
     fetch('https://api.thecatapi.com/v1/breeds')
@@ -44,14 +46,14 @@ export default function Home() {
           id: cat.id,
           name: cat.name,
           description: cat.description,
-          temperament: cat.temperament
+          temperament: cat.temperament,
+          origin: cat.origin
         }));
         setCatBreeds(cats);
-        if (cats.length > 0) {
-          setSelectedCatBreed(cats[0].id);
-        }
       });
   }, []);
+
+
 
   useEffect(() => {
     if (activeTab === 'dogs' && selectedDogBreed) {
@@ -77,9 +79,48 @@ export default function Home() {
     }
   }, [activeTab, selectedCatBreed]);
 
+  const sortedDogBreeds = useMemo(() => {
+    return [...dogBreeds].sort((a, b) => {
+      if (sortBy === 'name') return a.localeCompare(b);
+      const detailsA = getBreedDetails(a, false);
+      const detailsB = getBreedDetails(b, false);
+      if (sortBy === 'popularity') return detailsA.rawPopularity - detailsB.rawPopularity;
+      if (sortBy === 'price') return detailsA.rawMinPrice - detailsB.rawMinPrice;
+      if (sortBy === 'origin') return detailsA.origin.localeCompare(detailsB.origin);
+      return 0;
+    });
+  }, [dogBreeds, sortBy]);
+
+  const sortedCatBreeds = useMemo(() => {
+    return [...catBreeds].sort((a, b) => {
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      const detailsA = getBreedDetails(a.id, true, a.origin);
+      const detailsB = getBreedDetails(b.id, true, b.origin);
+      if (sortBy === 'popularity') return detailsA.rawPopularity - detailsB.rawPopularity;
+      if (sortBy === 'price') return detailsA.rawMinPrice - detailsB.rawMinPrice;
+      if (sortBy === 'origin') return detailsA.origin.localeCompare(detailsB.origin);
+      return 0;
+    });
+  }, [catBreeds, sortBy]);
+
+  useEffect(() => {
+    if (sortedDogBreeds.length > 0) {
+      setSelectedDogBreed(sortedDogBreeds[0]);
+    }
+  }, [sortedDogBreeds]);
+
+  useEffect(() => {
+    if (sortedCatBreeds.length > 0) {
+      setSelectedCatBreed(sortedCatBreeds[0].id);
+    }
+  }, [sortedCatBreeds]);
+
   const activeCatInfo = activeTab === 'cats'
     ? catBreeds.find(c => c.id === selectedCatBreed)
     : null;
+
+  const catDetails = activeCatInfo ? getBreedDetails(activeCatInfo.id, true, activeCatInfo.origin) : null;
+  const dogDetails = (activeTab === 'dogs' && selectedDogBreed) ? getBreedDetails(selectedDogBreed, false) : null;
 
   return (
     <main>
@@ -111,13 +152,24 @@ export default function Home() {
         </div>
 
         <div className="controls-container">
+          <select
+            className="custom-select sort-select"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+          >
+            <option value="popularity">Sort: Popularity</option>
+            <option value="price">Sort: Price</option>
+            <option value="name">Sort: Name</option>
+            <option value="origin">Sort: Origin</option>
+          </select>
+          
           {activeTab === 'dogs' ? (
             <select
-              className="custom-select"
+              className="custom-select breed-select"
               value={selectedDogBreed}
               onChange={(e) => setSelectedDogBreed(e.target.value)}
             >
-              {dogBreeds.map(breed => {
+              {sortedDogBreeds.map(breed => {
                 const translation = getDogBreedTranslation(breed);
                 const displayName = breed.charAt(0).toUpperCase() + breed.slice(1);
                 return (
@@ -129,11 +181,11 @@ export default function Home() {
             </select>
           ) : (
             <select
-              className="custom-select"
+              className="custom-select breed-select"
               value={selectedCatBreed}
               onChange={(e) => setSelectedCatBreed(e.target.value)}
             >
-              {catBreeds.map(breed => {
+              {sortedCatBreeds.map(breed => {
                 const translation = getCatBreedTranslation(breed.name);
                 return (
                   <option key={breed.id} value={breed.id}>
@@ -155,9 +207,14 @@ export default function Home() {
           )}
         </div>
 
-        {activeCatInfo && (
+        {activeCatInfo && catDetails && (
           <div className="info-card">
             <h3>About the {activeCatInfo.name}</h3>
+            <div className="breed-meta">
+              <span><strong>Origin/History:</strong> {catDetails.origin}</span>
+              <span><strong>Price Range:</strong> {catDetails.priceRange}</span>
+              <span><strong>Popularity:</strong> {catDetails.popularity}</span>
+            </div>
             <p>{activeCatInfo.description}</p>
             <div className="tags">
               {activeCatInfo.temperament.split(',').map((t, idx) => (
@@ -167,9 +224,14 @@ export default function Home() {
           </div>
         )}
 
-        {activeTab === 'dogs' && selectedDogBreed && (
+        {activeTab === 'dogs' && selectedDogBreed && dogDetails && (
           <div className="info-card">
             <h3>About the {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
+            <div className="breed-meta">
+              <span><strong>Origin/History:</strong> {dogDetails.origin}</span>
+              <span><strong>Price Range:</strong> {dogDetails.priceRange}</span>
+              <span><strong>Popularity:</strong> {dogDetails.popularity}</span>
+            </div>
             <p>The {selectedDogBreed} is a wonderful and beautiful dog breed. Known for their unique characteristics and loyal companionship, they make great additions to many families. Explore the gallery above to see just how stunning they are!</p>
             <div className="tags">
               <span className="tag">Loyal Companion</span>
