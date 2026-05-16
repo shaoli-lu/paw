@@ -352,6 +352,8 @@ body {
   border-radius: var(--radius);
   max-width: 500px;
   width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px var(--glow-color);
   animation: slideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -442,5 +444,9 @@ body {
   .custom-select {
     font-size: 1.1rem;
     padding: 1rem 3rem 1rem 1.5rem;
+  }
+  .modal-content {
+    padding: 1.5rem;
+    max-height: 95vh;
   }
 }
