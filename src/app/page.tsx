@@ -7,8 +7,10 @@ import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTra
 import { getBreedDetails } from '@/utils/breedDetails';
 import { fetchWithCache } from '@/utils/apiCache';
 import dogDescriptionsData from '@/utils/dogDescriptions.json';
+import dogTraitsData from '@/utils/dogTraits.json';
 
 const dogDescriptions: Record<string, string> = dogDescriptionsData;
+const dogTraits: Record<string, string[]> = dogTraitsData;
 
 type CatBreed = {
   id: string;
@@ -291,9 +293,9 @@ export default function Home() {
             </div>
             <p>{dogDescriptions[selectedDogBreed] || dogDescriptions["default"]}</p>
             <div className="tags">
-              <span className="tag">Loyal Companion</span>
-              <span className="tag">Playful</span>
-              <span className="tag">Unique Heritage</span>
+              {(dogTraits[selectedDogBreed] || dogTraits["default"]).map((trait, idx) => (
+                <span key={idx} className="tag">{trait}</span>
+              ))}
             </div>
           </div>
         )}
