@@ -241,7 +241,50 @@ body {
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
+}
+.info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.pronounce-btn {
+  background: rgba(255, 51, 102, 0.15);
+  backdrop-filter: blur(10px);
+  color: white;
+  border: 1px solid rgba(255, 51, 102, 0.3);
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.pronounce-btn:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border-color: transparent;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 20px var(--glow-color);
+}
+.pronounce-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.pronounce-btn.active {
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  animation: pulse-glow 1.5s infinite;
+  border-color: transparent;
+}
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 10px var(--glow-color); }
+  50% { box-shadow: 0 0 25px rgba(0, 210, 255, 0.6); }
+  100% { box-shadow: 0 0 10px var(--glow-color); }
 }
 .breed-meta {
   display: flex;

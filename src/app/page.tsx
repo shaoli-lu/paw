@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Slideshow from '@/components/Slideshow';
 import HelpModal from '@/components/HelpModal';
 import { getDogBreedTranslation, getCatBreedTranslation } from '@/utils/breedTranslations';
@@ -22,6 +22,71 @@ type CatBreed = {
 
 type SortOption = 'name' | 'popularity' | 'price' | 'origin';
 
+// Voice Narration Helpers
+const VOICE_PREFS = [
+  'Google US English',
+  'Microsoft Aria Online (Natural) - English (United States)',
+  'Microsoft Guy Online (Natural) - English (United States)',
+  'Microsoft Jenny Online (Natural) - English (United States)',
+  'Microsoft Zira - English (United States)',
+  'Alex',          // macOS
+  'Samantha',      // macOS / iOS
+  'Karen',         // macOS / iOS
+];
+
+function pickVoice() {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  
+  for (const pref of VOICE_PREFS) {
+    const v = voices.find(v => v.name === pref);
+    if (v) return v;
+  }
+  
+  const natural = voices.find(v => v.name.toLowerCase().includes('natural') && v.lang.startsWith('en'));
+  if (natural) return natural;
+
+  const enUS = voices.filter(v => v.lang === 'en-US' && !v.name.toLowerCase().includes('compact'));
+  if (enUS.length) return enUS[0];
+  
+  return voices.find(v => v.lang.startsWith('en')) || null;
+}
+
+function makeUtterance(text: string, { rate = 1.0, pitch = 1.0, voice }: { rate?: number; pitch?: number; voice?: SpeechSynthesisVoice | null } = {}) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = rate;
+  u.pitch = pitch;
+  u.volume = 1;
+  if (voice) u.voice = voice;
+  return u;
+}
+
+function cleanBreedNameForSpeech(breed: string): string {
+  const custom: Record<string, string> = {
+    "stbernard": "Saint Bernard",
+    "cotondetulear": "Coton de Tulear",
+    "mexicanhairless": "Mexican Hairless",
+    "bullterrier": "Bull Terrier",
+    "cattledog": "Cattle Dog",
+    "shihtzu": "Shih Tzu",
+    "sharpei": "Shar Pei",
+    "german": "German Shepherd",
+    "dane": "Great Dane",
+    "frise": "Bichon Frise",
+    "buhund": "Norwegian Buhund",
+    "rough": "Rough Collie",
+    "pembroke": "Pembroke Welsh Corgi",
+    "bluetick": "Bluetick Coonhound",
+    "borzoi": "Borzoi",
+    "bouvier": "Bouvier des Flandres"
+  };
+  if (custom[breed.toLowerCase()]) {
+    return custom[breed.toLowerCase()];
+  }
+  return breed.charAt(0).toUpperCase() + breed.slice(1);
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'dogs' | 'cats'>('dogs');
   const [sortBy, setSortBy] = useState<SortOption>('popularity');
@@ -36,6 +101,65 @@ export default function Home() {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Speech Synthesis State
+  const [pronouncingBreed, setPronouncingBreed] = useState<string | null>(null);
+  const pronouncingRef = useRef<string | null>(null);
+
+  const pronounce = (nameText: string, breedKey: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+    setPronouncingBreed(breedKey);
+    pronouncingRef.current = breedKey;
+
+    const go = () => {
+      setTimeout(() => {
+        if (pronouncingRef.current !== breedKey) return;
+        synth.resume(); 
+        const voice = pickVoice();
+
+        // Short silent warmup to wake up the OS audio driver without audible noise or long delays
+        const warmup = makeUtterance('a', { voice });
+        warmup.volume = 0;
+        
+        const u1 = makeUtterance(`${nameText}. ${nameText}.`, { rate: 0.95, pitch: 1.0, voice });
+
+        const startRealSpeech = () => {
+          setTimeout(() => {
+            if (pronouncingRef.current === breedKey) {
+              synth.speak(u1);
+            }
+          }, 150);
+        };
+
+        warmup.onend = startRealSpeech;
+        warmup.onerror = startRealSpeech;
+
+        u1.onend = () => {
+          if (pronouncingRef.current === breedKey) {
+            setPronouncingBreed(null);
+            pronouncingRef.current = null;
+          }
+        };
+        u1.onerror = () => {
+          if (pronouncingRef.current === breedKey) {
+            setPronouncingBreed(null);
+            pronouncingRef.current = null;
+          }
+        };
+
+        synth.speak(warmup);
+      }, 50);
+    };
+
+    const voices = synth.getVoices();
+    if (voices.length) {
+      go();
+    } else {
+      synth.addEventListener('voiceschanged', go, { once: true });
+    }
+  };
 
   useEffect(() => {
     // Fetch initial breeds
@@ -268,7 +392,16 @@ export default function Home() {
 
         {activeCatInfo && catDetails && (
           <div className="info-card">
-            <h3>#{catRanks[activeCatInfo.id]} {activeCatInfo.name}</h3>
+            <div className="info-header">
+              <h3>#{catRanks[activeCatInfo.id]} {activeCatInfo.name}</h3>
+              <button 
+                className={`pronounce-btn ${pronouncingBreed === activeCatInfo.id ? 'active' : ''}`}
+                onClick={() => pronounce(activeCatInfo.name, activeCatInfo.id)}
+                title="Pronounce cat breed name"
+              >
+                {pronouncingBreed === activeCatInfo.id ? '🗣️ Pronouncing...' : '🔊 Pronounce'}
+              </button>
+            </div>
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {catDetails.origin}</span>
               <span><strong>Price Range:</strong> {catDetails.priceRange}</span>
@@ -285,7 +418,16 @@ export default function Home() {
 
         {activeTab === 'dogs' && selectedDogBreed && dogDetails && (
           <div className="info-card">
-            <h3>#{dogRanks[selectedDogBreed]} {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
+            <div className="info-header">
+              <h3>#{dogRanks[selectedDogBreed]} {selectedDogBreed.charAt(0).toUpperCase() + selectedDogBreed.slice(1)}</h3>
+              <button 
+                className={`pronounce-btn ${pronouncingBreed === selectedDogBreed ? 'active' : ''}`}
+                onClick={() => pronounce(cleanBreedNameForSpeech(selectedDogBreed), selectedDogBreed)}
+                title="Pronounce dog breed name"
+              >
+                {pronouncingBreed === selectedDogBreed ? '🗣️ Pronouncing...' : '🔊 Pronounce'}
+              </button>
+            </div>
             <div className="breed-meta">
               <span><strong>Origin/History:</strong> {dogDetails.origin}</span>
               <span><strong>Price Range:</strong> {dogDetails.priceRange}</span>
