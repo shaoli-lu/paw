@@ -88,7 +88,7 @@ function cleanBreedNameForSpeech(breed: string): string {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'dogs' | 'cats'>('dogs');
+  const [activeTab, setActiveTab] = useState<'dogs' | 'cats'>('cats');
   const [sortBy, setSortBy] = useState<SortOption>('popularity');
 
   // Data States
@@ -313,16 +313,16 @@ export default function Home() {
       <div className="main-container">
         <div className="tabs-container">
           <button
-            className={`tab-button ${activeTab === 'dogs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dogs')}
-          >
-            Dogs (狗)
-          </button>
-          <button
             className={`tab-button ${activeTab === 'cats' ? 'active' : ''}`}
             onClick={() => setActiveTab('cats')}
           >
             Cats (猫)
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'dogs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('dogs')}
+          >
+            Dogs (狗)
           </button>
         </div>
 
