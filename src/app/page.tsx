@@ -113,51 +113,37 @@ export default function Home() {
     setPronouncingBreed(breedKey);
     pronouncingRef.current = breedKey;
 
-    const go = () => {
-      setTimeout(() => {
-        if (pronouncingRef.current !== breedKey) return;
-        synth.resume(); 
-        const voice = pickVoice();
+    const speak = () => {
+      if (pronouncingRef.current !== breedKey) return;
+      const voice = pickVoice();
+      const utterance = makeUtterance(nameText, { rate: 0.95, pitch: 1.0, voice });
 
-        // Short silent warmup to wake up the OS audio driver without audible noise or long delays
-        const warmup = makeUtterance('a', { voice });
-        warmup.volume = 0;
-        
-        const u1 = makeUtterance(`${nameText}. ${nameText}.`, { rate: 0.95, pitch: 1.0, voice });
+      utterance.onend = () => {
+        if (pronouncingRef.current === breedKey) {
+          setPronouncingBreed(null);
+          pronouncingRef.current = null;
+        }
+      };
 
-        const startRealSpeech = () => {
-          setTimeout(() => {
-            if (pronouncingRef.current === breedKey) {
-              synth.speak(u1);
-            }
-          }, 150);
-        };
+      utterance.onerror = () => {
+        if (pronouncingRef.current === breedKey) {
+          setPronouncingBreed(null);
+          pronouncingRef.current = null;
+        }
+      };
 
-        warmup.onend = startRealSpeech;
-        warmup.onerror = startRealSpeech;
-
-        u1.onend = () => {
-          if (pronouncingRef.current === breedKey) {
-            setPronouncingBreed(null);
-            pronouncingRef.current = null;
-          }
-        };
-        u1.onerror = () => {
-          if (pronouncingRef.current === breedKey) {
-            setPronouncingBreed(null);
-            pronouncingRef.current = null;
-          }
-        };
-
-        synth.speak(warmup);
-      }, 50);
+      synth.speak(utterance);
     };
 
     const voices = synth.getVoices();
     if (voices.length) {
-      go();
+      speak();
     } else {
-      synth.addEventListener('voiceschanged', go, { once: true });
+      synth.addEventListener('voiceschanged', () => {
+        speak();
+      }, { once: true });
+      // Fallback in case voiceschanged never fires
+      setTimeout(speak, 500);
     }
   };
 
